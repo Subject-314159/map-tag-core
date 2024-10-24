@@ -2,12 +2,12 @@ local gui = require("scripts.gui")
 local gps = require("scripts.gps")
 
 local function init_global_player(player_index)
-    if not global.players then
-        global.players = {}
+    if not storage.players then
+        storage.players = {}
     end
 
-    if not global.players[player_index] then
-        global.players[player_index] = {
+    if not storage.players[player_index] then
+        storage.players[player_index] = {
             destinations = {},
             bookmarks = {}
         }
@@ -23,7 +23,7 @@ local function global_init()
     gps.init()
 
     -- Remove all destinations if teleport is installed
-    if game.active_mods["map-tag-teleport"] then
+    if script.active_mods["map-tag-teleport"] then
         for _, p in pairs(game.players) do
             gps.remove_all(p.index)
         end
@@ -49,7 +49,7 @@ script.on_configuration_changed(function(e)
 end)
 
 script.on_event(defines.events.on_player_created, function(e)
-    if not global then
+    if not storage then
         global_init()
     end
     init_global_player(e.player_index)
@@ -57,7 +57,7 @@ end)
 
 script.on_event(defines.events.on_chart_tag_added, function(e)
     -- Check if tag is GPS tag
-    if game.active_mods["map-tag-gps"] and e.tag.text == settings.global["gps_tag-name"].value then
+    if script.active_mods["map-tag-gps"] and e.tag.text == settings.global["gps_tag-name"].value then
         gps.set_destination(e.player_index, e.tag)
     end
 end)
@@ -101,8 +101,8 @@ script.on_event(defines.events.on_player_selected_area, function(e)
     end
     if cursor_stack.name == "mt_gps-selection-tool" then
         -- Get variables
-        local mod_teleport = game.active_mods["map-tag-teleport"] ~= nil
-        local mod_gps = game.active_mods["map-tag-gps"] ~= nil
+        local mod_teleport = script.active_mods["map-tag-teleport"] ~= nil
+        local mod_gps = script.active_mods["map-tag-gps"] ~= nil
         local mod_both = mod_teleport and mod_gps
         local ctrl_click_teleports = settings.global["mtc_ctrl-click-behavior"] and
                                          settings.global["mtc_ctrl-click-behavior"].value == "mtc_teleport"
@@ -145,8 +145,8 @@ script.on_event(defines.events.on_gui_click, function(e)
         end
 
         -- Process the action
-        local mod_teleport = game.active_mods["map-tag-teleport"] ~= nil
-        local mod_gps = game.active_mods["map-tag-gps"] ~= nil
+        local mod_teleport = script.active_mods["map-tag-teleport"] ~= nil
+        local mod_gps = script.active_mods["map-tag-gps"] ~= nil
         local mod_both = mod_teleport and mod_gps
         local ctrl_click_teleports = settings.global["mtc_ctrl-click-behavior"] and
                                          settings.global["mtc_ctrl-click-behavior"].value == "mtc_teleport"

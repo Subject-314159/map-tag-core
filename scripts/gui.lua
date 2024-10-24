@@ -73,7 +73,7 @@ end
 
 local build_content = function(player, gui)
 
-    local gp = global.players[player.index]
+    local gp = storage.players[player.index]
 
     local sf = gui.add {
         type = "frame",
@@ -118,7 +118,7 @@ local build_content = function(player, gui)
         add_tag_element(scroll, t, bookmarks[t.tag_number])
     end
 
-    if game.active_mods["map-tag-gps"] then
+    if script.active_mods["map-tag-gps"] then
         local btn = gui.add {
             type = "button",
             name = "mt_remove-all-destinations",
@@ -143,8 +143,8 @@ gui.build_main = function(player)
 
     -- Set caption & label
     local caption, label
-    local mod_teleport = game.active_mods["map-tag-teleport"] ~= nil
-    local mod_gps = game.active_mods["map-tag-gps"] ~= nil
+    local mod_teleport = script.active_mods["map-tag-teleport"] ~= nil
+    local mod_gps = script.active_mods["map-tag-gps"] ~= nil
     local mod_both = mod_teleport and mod_gps
     local ctrl_click_teleports = settings.global["mtc_ctrl-click-behavior"] and
                                      settings.global["mtc_ctrl-click-behavior"].value == "mtc_teleport"
@@ -258,7 +258,7 @@ gui.tick_update = function()
             else
 
                 -- Set button selected/deselected based on if it is a destination
-                if global.players[p.index].destinations[id] then
+                if storage.players[p.index].destinations[id] then
                     if btn and not btn.toggled then
                         btn.toggled = true
                     end
@@ -282,7 +282,7 @@ gui.bookmark = function(player_index, element)
     if not gui then
         return
     end
-    local gp = global.players[player_index]
+    local gp = storage.players[player_index]
     if not gp then
         return
     end

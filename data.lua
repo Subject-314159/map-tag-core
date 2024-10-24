@@ -8,10 +8,10 @@ data:extend({{
 }, {
     type = "shortcut",
     name = "mt_give-gps-selection-tool",
-    icon = {
-        filename = "__map-tag-core__/graphics/icons/pin.png",
-        size = 64
-    },
+    icon = "__map-tag-core__/graphics/icons/pin.png",
+    icon_size = 64,
+    small_icon = "__map-tag-core__/graphics/icons/pin.png",
+    small_icon_size = 64,
     action = "spawn-item",
     item_to_spawn = "mt_gps-selection-tool"
 }, {
@@ -20,11 +20,16 @@ data:extend({{
     icon = "__map-tag-core__/graphics/icons/pin.png",
     icon_size = 64,
     stack_size = 1,
-    flags = {"only-in-cursor", "hidden", "spawnable", "not-stackable"},
-    selection_mode = "nothing",
-    alt_selection_mode = "nothing",
-    selection_color = {1, 1, 1},
-    alt_selection_color = {0, 0, 0, 0},
-    selection_cursor_box_type = "not-allowed",
-    alt_selection_cursor_box_type = "not-allowed"
+    flags = {"only-in-cursor", "spawnable", "not-stackable"},
+    hidden = true,
+    select = {
+        border_color = { 1, 1, 1 },
+        cursor_box_type = 'not-allowed',
+        mode = 'nothing',
+    },
+    alt_select = {
+        border_color = {0, 0, 0, 0},
+        cursor_box_type = 'not-allowed',
+        mode = 'nothing',
+    },
 } --[[@as data.SelectionToolPrototype]] })

@@ -20,13 +20,15 @@ local function draw_new_destination(player, position)
     }
 
     -- Draw & return the id
-    return rendering.draw_sprite(prop)
+    return rendering.draw_sprite(prop).id
 end
 
 local function clear_destination(destination)
     -- Destroy the sprites
     arrow.remove(destination.arrow_id)
-    rendering.destroy(destination.destination_id)
+    if destination.destination_id and rendering.get_object_by_id(destination.destination_id) then
+        rendering.get_object_by_id(destination.destination_id).destroy()
+    end
 
     -- Remove the map tag if it is our GPS destination tag
     if destination.tag.text == settings.global["gps_tag-name"].value then
@@ -59,7 +61,7 @@ end
 gps.invalidate_tag = function(tag)
 
     -- Loop through all destinations to check if this was one of our destination tags
-    for i, p in pairs(global.players or {}) do
+    for i, p in pairs(storage.players or {}) do
         local player = game.get_player(i)
         if player then
             for j, d in pairs(p.destinations) do
@@ -86,7 +88,7 @@ gps.invalidate_tag = function(tag)
 end
 
 gps.remove_all = function(player_index)
-    for _, d in pairs(global.players[player_index].destinations) do
+    for _, d in pairs(storage.players[player_index].destinations) do
         gps.invalidate_tag(d.tag)
     end
 end
@@ -183,7 +185,7 @@ gps.set_destination = function(player_index, tag)
 
     -- Check if this destination is already set, if so remove the destination instead
     -- This happens when the destination is clicked from the GUI
-    for j, d in pairs(global.players[player_index].destinations) do
+    for j, d in pairs(storage.players[player_index].destinations) do
         if d.tag.tag_number == tag.tag_number then
             -- Notify player first (we need the tag info for the message)
             game.print(
@@ -191,7 +193,7 @@ gps.set_destination = function(player_index, tag)
                     (tag.position.y) .. "," .. d.tag.surface.name .. "]")
 
             -- Clear the array before we remove the tag
-            global.players[player_index].destinations[j] = nil
+            storage.players[player_index].destinations[j] = nil
 
             -- Remove the tag last (which will trigger event on tag removed)
             clear_destination(d)
@@ -254,8 +256,8 @@ gps.set_destination = function(player_index, tag)
     -- Create destination sprite
     local destination_id = draw_new_destination(player, tag.position)
 
-    -- Store in global
-    global.players[player_index].destinations[tag.tag_number] = {
+    -- Store in storage
+    storage.players[player_index].destinations[tag.tag_number] = {
         tag = tag,
         destination_id = destination_id,
         arrow_id = arrow_id,
@@ -298,7 +300,7 @@ gps.tick_update = function()
     arrow.tick_update()
 
     -- Update specific arrows if any
-    for i, p in pairs(global.players or {}) do
+    for i, p in pairs(storage.players or {}) do
         -- Get the player & character
         local player = game.get_player(i)
         if not player or not player.character then
